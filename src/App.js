@@ -288,7 +288,7 @@ barplot(values, names.arg=categories,
         main="Category Counts", col="orange")`,
           explanation: "Histograms and bar plots are like giving your data a voice! They help tell the story hidden in your numbers - showing patterns, distributions, and comparisons that might be invisible in raw data. You're becoming a data storyteller!",
           exercise: {
-            prompt: "Create a histogram using these numbers: 1, 2, 2, 3, 3, 3, 4, 4, 5. First store them in a variable, then create the histogram:",
+            prompt: "Create a histogram using these numbers: 1, 2, 2, 3, 3, 3, 4, 4, 5. First store them in a variable named 'data', then create the histogram:",
             solution: `data <- c(1, 2, 2, 3, 3, 3, 4, 4, 5)
 hist(data)`,
             hint: "Create the data vector, then use hist(data)"
