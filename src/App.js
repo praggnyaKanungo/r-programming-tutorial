@@ -729,7 +729,7 @@ hist(data)`,
               onClick={closeCongratulations}
               className="px-8 py-3 bg-gradient-to-r from-green-500 via-blue-500 to-purple-500 text-white rounded-xl hover:from-green-600 hover:via-blue-600 hover:to-purple-600 font-semibold transition-all duration-300 transform hover:scale-110 shadow-xl"
             >
-              Awesome! Close
+              Awesome! Close this message.
             </button>
           </div>
         </div>
