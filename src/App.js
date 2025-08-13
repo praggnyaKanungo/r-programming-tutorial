@@ -28,7 +28,7 @@ const RLearningSite = () => {
 2^3  # Power`,
           explanation: "Guess what? R can be your personal calculator! How cool is that? Let's try some basic math - I promise it's way more fun than it sounds!",
           exercise: {
-            prompt: "Now try calculating 15 + 25 yourself:",
+            prompt: "Calculate 15 + 25:",
             solution: "15 + 25",
             hint: "Just type the two numbers with a + sign between them!"
           }
@@ -74,7 +74,7 @@ boolean_values <- c(TRUE, FALSE, TRUE)
 boolean_values`,
           explanation: "This is going to blow your mind! The c() function is like a magic wand that combines things together. You can mix numbers, words, or even true/false values. It's like creating your own custom lists - so satisfying!",
           exercise: {
-            prompt: "Create a vector called 'colors' with three color names:",
+            prompt: "Create a vector called 'colors' containing exactly these three color names: red, blue, green:",
             solution: `colors <- c("red", "blue", "green")`,
             hint: "Use c() and put the color names in quotes: c(\"color1\", \"color2\", \"color3\")"
           }
@@ -90,7 +90,7 @@ vec1 * 2
 length(vec1)  # Get vector length`,
           explanation: "Hold onto your hat because this is pure magic! R can do math on entire lists at once - no need to do it one by one like a caveman! When you multiply a vector by 2, R says 'got it!' and multiplies EVERY number. It's like having superpowers!",
           exercise: {
-            prompt: "Create a vector with numbers 2, 4, 6 and multiply it by 3:",
+            prompt: "Create a vector named 'numbers' containing the numbers 2, 4, 6, then multiply the entire vector by 3. Write this as two separate lines:",
             solution: `numbers <- c(2, 4, 6)
 numbers * 3`,
             hint: "First create the vector with c(), then multiply by 3 on the next line"
@@ -117,7 +117,7 @@ students
 str(students)  # Structure of data frame`,
           explanation: "Get ready to feel like a data architect! Data frames are like building the perfect filing cabinet where everything has its place. You're literally creating a mini database right now - how awesome is that?! The str() function is like peeking behind the curtain to see how your creation is built!",
           exercise: {
-            prompt: "Create a data frame called 'cars' with columns 'brand' and 'year':",
+            prompt: "Create a data frame called 'cars' with a 'brand' column containing Toyota and Honda, and a 'year' column containing 2020 and 2019:",
             solution: `cars <- data.frame(
   brand = c("Toyota", "Honda"),
   year = c(2020, 2019)
@@ -137,7 +137,7 @@ students[1, ]  # First row
 students[1:2, ]  # First two rows`,
           explanation: "This is like having secret passwords to access your data! The $ symbol is my personal favorite - it's like saying 'hey data frame, give me that specific column please!' And those square brackets? They're like GPS coordinates for your data. You're becoming a data detective!",
           exercise: {
-            prompt: "Access the 'age' column from the students data frame using $ notation:",
+            prompt: "Access the 'age' column from the students data frame using the dollar sign ($) notation:",
             solution: "students$age",
             hint: "Use the $ symbol: dataframe$column_name"
           }
@@ -164,7 +164,7 @@ max(scores)      # Maximum
 summary(scores)  # Summary statistics`,
           explanation: "This is where R becomes your personal data analyst! These functions are like having a smart friend who can instantly tell you everything about your numbers. Mean, median, standard deviation - R calculates them all in a flash! You're literally doing professional-level statistics right now!",
           exercise: {
-            prompt: "Find the maximum value in a vector c(12, 45, 23, 67, 34):",
+            prompt: "Find the maximum value in this vector: c(12, 45, 23, 67, 34):",
             solution: "max(c(12, 45, 23, 67, 34))",
             hint: "Use max() function with the vector inside: max(c(numbers...))"
           }
@@ -212,7 +212,7 @@ if (score >= 90) {
 print(paste("Grade:", grade))`,
           explanation: "This is like teaching your computer to think! If-else statements are decision trees that make your code smart. Your program can now look at data and decide what to do - just like how you might choose an outfit based on the weather. You're creating intelligent code!",
           exercise: {
-            prompt: "Write an if statement that checks if x = 15 is greater than 10:",
+            prompt: "Create a variable x with value 15, then write an if statement to check if x is greater than 10 and print a message if true:",
             solution: `x <- 15
 if (x > 10) {
   print("x is greater than 10")
@@ -237,7 +237,7 @@ for (i in 1:5) {
 }`,
           explanation: "For loops are absolutely magical! Instead of typing the same thing over and over (boring!), you can tell R 'do this thing for each item in my list' and watch it work like a tireless assistant. It's like having a robot helper that never gets tired!",
           exercise: {
-            prompt: "Write a for loop that prints numbers 1 to 3:",
+            prompt: "Write a for loop that prints the numbers 1, 2, and 3:",
             solution: `for (i in 1:3) {
   print(i)
 }`,
@@ -267,7 +267,7 @@ plot(x, y, main="Square Function",
 lines(x, y, col="red")`,
           explanation: "This is pure art meets science! With just a few lines of code, you're creating beautiful visualizations that can reveal patterns and insights. The plot() function is like your magic paintbrush, and adding colors and lines makes your data come alive!",
           exercise: {
-            prompt: "Create a simple plot of x = 1:5 and y = x * 2:",
+            prompt: "Create vectors x with values 1 through 5, and y where each value is x multiplied by 2, then create a plot:",
             solution: `x <- 1:5
 y <- x * 2
 plot(x, y)`,
@@ -288,7 +288,7 @@ barplot(values, names.arg=categories,
         main="Category Counts", col="orange")`,
           explanation: "Histograms and bar plots are like giving your data a voice! They help tell the story hidden in your numbers - showing patterns, distributions, and comparisons that might be invisible in raw data. You're becoming a data storyteller!",
           exercise: {
-            prompt: "Create a histogram of the numbers c(1, 2, 2, 3, 3, 3, 4, 4, 5):",
+            prompt: "Create a histogram using these numbers: 1, 2, 2, 3, 3, 3, 4, 4, 5. First store them in a variable called 'data', then create the histogram:",
             solution: `data <- c(1, 2, 2, 3, 3, 3, 4, 4, 5)
 hist(data)`,
             hint: "Create the data vector, then use hist(data)"
