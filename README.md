@@ -25,8 +25,3 @@ This tutorial was created to provide newcomers with a friendly, approachable int
 ## Try It Out!
 
 **[Launch the Interactive Tutorial →](https://praggnyankanungo.github.io/r-programming-tutorial)**
-
-
----
-
-*Ready to start your R programming journey? Click the link above and let's get started!* 🎉
