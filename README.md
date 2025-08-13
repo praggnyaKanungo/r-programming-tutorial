@@ -24,4 +24,5 @@ This tutorial was created to provide newcomers with a friendly, approachable int
 
 ## Try It Out!
 
-**[Launch the Interactive Tutorial →](https://praggnyankanungo.github.io/r-programming-tutorial)**
+ Please use this link: https://praggnyakanungo.github.io/r-programming-tutorial/
+ 
