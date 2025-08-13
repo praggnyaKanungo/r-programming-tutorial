@@ -90,7 +90,7 @@ vec1 * 2
 length(vec1)  # Get vector length`,
           explanation: "Hold onto your hat because this is pure magic! R can do math on entire lists at once - no need to do it one by one like a caveman! When you multiply a vector by 2, R says 'got it!' and multiplies EVERY number. It's like having superpowers!",
           exercise: {
-            prompt: "Create a vector containing the numbers 2, 4, 6, then multiply the entire vector by 3. Write this as two separate lines:",
+            prompt: "Create a vector named 'numbers' containing the numbers 2, 4, 6, then multiply the entire vector by 3. Write this as two separate lines:",
             solution: `numbers <- c(2, 4, 6)
 numbers * 3`,
             hint: "First create the vector with c(), then multiply by 3 on the next line"
