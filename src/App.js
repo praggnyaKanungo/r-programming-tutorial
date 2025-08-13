@@ -90,7 +90,7 @@ vec1 * 2
 length(vec1)  # Get vector length`,
           explanation: "Hold onto your hat because this is pure magic! R can do math on entire lists at once - no need to do it one by one like a caveman! When you multiply a vector by 2, R says 'got it!' and multiplies EVERY number. It's like having superpowers!",
           exercise: {
-            prompt: "Create a vector named 'numbers' containing the numbers 2, 4, 6, then multiply the entire vector by 3. Write this as two separate lines:",
+            prompt: "Create a vector containing the numbers 2, 4, 6, then multiply the entire vector by 3. Write this as two separate lines:",
             solution: `numbers <- c(2, 4, 6)
 numbers * 3`,
             hint: "First create the vector with c(), then multiply by 3 on the next line"
@@ -288,7 +288,7 @@ barplot(values, names.arg=categories,
         main="Category Counts", col="orange")`,
           explanation: "Histograms and bar plots are like giving your data a voice! They help tell the story hidden in your numbers - showing patterns, distributions, and comparisons that might be invisible in raw data. You're becoming a data storyteller!",
           exercise: {
-            prompt: "Create a histogram using these numbers: 1, 2, 2, 3, 3, 3, 4, 4, 5. First store them in a variable called 'data', then create the histogram:",
+            prompt: "Create a histogram using these numbers: 1, 2, 2, 3, 3, 3, 4, 4, 5. First store them in a variable, then create the histogram:",
             solution: `data <- c(1, 2, 2, 3, 3, 3, 4, 4, 5)
 hist(data)`,
             hint: "Create the data vector, then use hist(data)"
