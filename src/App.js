@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Play, Book, Code, ChevronRight, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Play, Book, Code, ChevronRight, ChevronDown, Loader } from 'lucide-react';
 
 const RLearningSite = () => {
   const [selectedLesson, setSelectedLesson] = useState(0);
@@ -10,6 +10,51 @@ const RLearningSite = () => {
   const [userOutputs, setUserOutputs] = useState({});
   const [showSolutions, setShowSolutions] = useState({});
   const [showCongratulations, setShowCongratulations] = useState(false);
+  const [rReady, setRReady] = useState(false);
+  const [rLoading, setRLoading] = useState(true);
+  const [executingCode, setExecutingCode] = useState({});
+
+  const webRRef = useRef(null);
+
+  // Initialize WebR
+  useEffect(() => {
+    const initializeWebR = async () => {
+      try {
+        // Load WebR from CDN
+        if (!window.webR) {
+          const script = document.createElement('script');
+          script.src = 'https://webr.r-wasm.org/latest/webr.mjs';
+          script.type = 'module';
+          
+          script.onload = async () => {
+            try {
+              const { WebR } = await import('https://webr.r-wasm.org/latest/webr.mjs');
+              webRRef.current = new WebR();
+              await webRRef.current.init();
+              setRReady(true);
+              setRLoading(false);
+              console.log('WebR initialized successfully!');
+            } catch (error) {
+              console.error('Error initializing WebR:', error);
+              setRLoading(false);
+            }
+          };
+          
+          script.onerror = () => {
+            console.error('Failed to load WebR');
+            setRLoading(false);
+          };
+          
+          document.head.appendChild(script);
+        }
+      } catch (error) {
+        console.error('Error setting up WebR:', error);
+        setRLoading(false);
+      }
+    };
+
+    initializeWebR();
+  }, []);
 
   const lessons = [
     {
@@ -20,12 +65,11 @@ const RLearningSite = () => {
       examples: [
         {
           title: "Basic Arithmetic",
-          code: `# Basic arithmetic operations
-5 + 3
+          code: `5 + 3
 10 - 4
 6 * 7
 20 / 4
-2^3  # Power`,
+2^3`,
           explanation: "Guess what? R can be your personal calculator! How cool is that? Let's try some basic math - I promise it's way more fun than it sounds!",
           exercise: {
             prompt: "Calculate 15 + 25:",
@@ -35,12 +79,10 @@ const RLearningSite = () => {
         },
         {
           title: "Variables and Assignment",
-          code: `# Creating variables
-x <- 5
+          code: `x <- 5
 y <- 10
 name <- "R Programming"
 
-# Display values
 x
 y
 name`,
@@ -61,15 +103,12 @@ name`,
       examples: [
         {
           title: "Creating Vectors",
-          code: `# Numeric vector
-numbers <- c(1, 2, 3, 4, 5)
+          code: `numbers <- c(1, 2, 3, 4, 5)
 numbers
 
-# Character vector
 fruits <- c("apple", "banana", "orange")
 fruits
 
-# Logical vector
 boolean_values <- c(TRUE, FALSE, TRUE)
 boolean_values`,
           explanation: "This is going to blow your mind! The c() function is like a magic wand that combines things together. You can mix numbers, words, or even true/false values. It's like creating your own custom lists - so satisfying!",
@@ -81,13 +120,12 @@ boolean_values`,
         },
         {
           title: "Vector Operations",
-          code: `# Vector arithmetic
-vec1 <- c(1, 2, 3, 4)
+          code: `vec1 <- c(1, 2, 3, 4)
 vec2 <- c(5, 6, 7, 8)
 
 vec1 + vec2
 vec1 * 2
-length(vec1)  # Get vector length`,
+length(vec1)`,
           explanation: "Hold onto your hat because this is pure magic! R can do math on entire lists at once - no need to do it one by one like a caveman! When you multiply a vector by 2, R says 'got it!' and multiplies EVERY number. It's like having superpowers!",
           exercise: {
             prompt: "Create a vector named 'numbers' containing the numbers 2, 4, 6, then multiply the entire vector by 3. Write this as two separate lines:",
@@ -106,15 +144,14 @@ numbers * 3`,
       examples: [
         {
           title: "Creating Data Frames",
-          code: `# Create a data frame
-students <- data.frame(
+          code: `students <- data.frame(
   name = c("Alice", "Bob", "Charlie"),
   age = c(20, 22, 21),
   grade = c("A", "B", "A")
 )
 
 students
-str(students)  # Structure of data frame`,
+str(students)`,
           explanation: "Get ready to feel like a data architect! Data frames are like building the perfect filing cabinet where everything has its place. You're literally creating a mini database right now - how awesome is that?! The str() function is like peeking behind the curtain to see how your creation is built!",
           exercise: {
             prompt: "Create a data frame called 'cars' with a 'brand' column containing Toyota and Honda, and a 'year' column containing 2020 and 2019:",
@@ -127,14 +164,12 @@ str(students)  # Structure of data frame`,
         },
         {
           title: "Accessing Data Frame Elements",
-          code: `# Access columns
-students$name
+          code: `students$name
 students[["age"]]
-students[, 1]  # First column
+students[, 1]
 
-# Access rows
-students[1, ]  # First row
-students[1:2, ]  # First two rows`,
+students[1, ]
+students[1:2, ]`,
           explanation: "This is like having secret passwords to access your data! The $ symbol is my personal favorite - it's like saying 'hey data frame, give me that specific column please!' And those square brackets? They're like GPS coordinates for your data. You're becoming a data detective!",
           exercise: {
             prompt: "Access the 'age' column from the students data frame using the dollar sign ($) notation:",
@@ -152,16 +187,14 @@ students[1:2, ]  # First two rows`,
       examples: [
         {
           title: "Statistical Functions",
-          code: `# Create sample data
-scores <- c(85, 90, 78, 92, 88, 76, 94, 89)
+          code: `scores <- c(85, 90, 78, 92, 88, 76, 94, 89)
 
-# Basic statistics
-mean(scores)     # Average
-median(scores)   # Middle value
-sd(scores)       # Standard deviation
-min(scores)      # Minimum
-max(scores)      # Maximum
-summary(scores)  # Summary statistics`,
+mean(scores)
+median(scores)
+sd(scores)
+min(scores)
+max(scores)
+summary(scores)`,
           explanation: "This is where R becomes your personal data analyst! These functions are like having a smart friend who can instantly tell you everything about your numbers. Mean, median, standard deviation - R calculates them all in a flash! You're literally doing professional-level statistics right now!",
           exercise: {
             prompt: "Find the maximum value in this vector: c(12, 45, 23, 67, 34):",
@@ -171,14 +204,13 @@ summary(scores)  # Summary statistics`,
         },
         {
           title: "String Functions",
-          code: `# Working with text
-text <- "Hello R Programming"
+          code: `text <- "Hello R Programming"
 
-nchar(text)           # Number of characters
-toupper(text)         # Convert to uppercase
-tolower(text)         # Convert to lowercase
-substr(text, 1, 5)    # Extract substring
-paste("Hello", "World") # Combine strings`,
+nchar(text)
+toupper(text)
+tolower(text)
+substr(text, 1, 5)
+paste("Hello", "World")`,
           explanation: "Text manipulation in R is like being a word wizard! You can count letters, change cases, slice and dice words, and even glue sentences together. It's so satisfying to see R transform your text exactly how you want it!",
           exercise: {
             prompt: "Convert the text 'learning r' to uppercase:",
@@ -196,8 +228,7 @@ paste("Hello", "World") # Combine strings`,
       examples: [
         {
           title: "If-Else Statements",
-          code: `# If-else example
-score <- 85
+          code: `score <- 85
 
 if (score >= 90) {
   grade <- "A"
@@ -222,16 +253,13 @@ if (x > 10) {
         },
         {
           title: "For Loops",
-          code: `# For loop example
-numbers <- c(1, 2, 3, 4, 5)
+          code: `numbers <- c(1, 2, 3, 4, 5)
 
-# Square each number
 for (i in numbers) {
   squared <- i^2
   print(paste(i, "squared is", squared))
 }
 
-# Loop with index
 for (i in 1:5) {
   print(paste("Iteration", i))
 }`,
@@ -254,16 +282,13 @@ for (i in 1:5) {
       examples: [
         {
           title: "Basic Plotting",
-          code: `# Sample data
-x <- 1:10
+          code: `x <- 1:10
 y <- x^2
 
-# Basic scatter plot
 plot(x, y, main="Square Function", 
      xlab="X values", ylab="Y values",
      col="blue", pch=16)
 
-# Add a line
 lines(x, y, col="red")`,
           explanation: "This is pure art meets science! With just a few lines of code, you're creating beautiful visualizations that can reveal patterns and insights. The plot() function is like your magic paintbrush, and adding colors and lines makes your data come alive!",
           exercise: {
@@ -276,12 +301,11 @@ plot(x, y)`,
         },
         {
           title: "Histograms and Bar Plots",
-          code: `# Random data for histogram
+          code: `set.seed(123)
 data <- rnorm(100, mean=50, sd=10)
 hist(data, main="Normal Distribution", 
      xlab="Values", col="lightblue")
 
-# Bar plot
 categories <- c("A", "B", "C", "D")
 values <- c(23, 17, 35, 28)
 barplot(values, names.arg=categories, 
@@ -298,42 +322,108 @@ hist(data)`,
     }
   ];
 
-  const getDemoOutput = (lessonId, exampleIndex) => {
-    const demoOutputData = {
-      "0-0": `[1] 8\n[1] 6\n[1] 42\n[1] 5\n[1] 8`,
-      "0-1": `[1] 5\n[1] 10\n[1] "R Programming"`,
-      "1-0": `[1] 1 2 3 4 5\n[1] "apple"  "banana" "orange"\n[1]  TRUE FALSE  TRUE`,
-      "1-1": `[1]  6  8 10 12\n[1] 2 4 6 8\n[1] 4`,
-      "2-0": `     name age grade\n1   Alice  20     A\n2     Bob  22     B\n3 Charlie  21     A\n'data.frame':	3 obs. of  3 variables:\n $ name : chr  "Alice" "Bob" "Charlie"\n $ age  : num  20 22 21\n $ grade: chr  "A" "B" "A"`,
-      "2-1": `[1] "Alice"   "Bob"     "Charlie"\n[1] 20 22 21\n[1] "Alice"   "Bob"     "Charlie"\n     name age grade\n1   Alice  20     A\n     name age grade\n1   Alice  20     A\n2     Bob  22     B`,
-      "3-0": `[1] 86.5\n[1] 88.5\n[1] 6.345289\n[1] 76\n[1] 94\n   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. \n   76.0    83.5    88.5    86.5    91.0    94.0`,
-      "3-1": `[1] 19\n[1] "HELLO R PROGRAMMING"\n[1] "hello r programming"\n[1] "Hello"\n[1] "Hello World"`,
-      "4-0": `[1] "Grade: B"`,
-      "4-1": `[1] "1 squared is 1"\n[1] "2 squared is 4"\n[1] "3 squared is 9"\n[1] "4 squared is 16"\n[1] "5 squared is 25"\n[1] "Iteration 1"\n[1] "Iteration 2"\n[1] "Iteration 3"\n[1] "Iteration 4"\n[1] "Iteration 5"`,
-      "5-0": `# A scatter plot with blue points and red connecting line would be displayed`,
-      "5-1": `# A histogram showing normal distribution with light blue bars\n# A bar plot with orange bars for categories A, B, C, D would be displayed`
-    };
-    
-    return demoOutputData[`${lessonId}-${exampleIndex}`] || "Output would be displayed here";
+  const executeRCode = async (code) => {
+    if (!rReady || !webRRef.current) {
+      throw new Error('R is not ready yet');
+    }
+
+    try {
+      const shelter = await new webRRef.current.Shelter();
+      
+      try {
+        const lines = code.split('\n').filter(line => line.trim());
+        let outputs = [];
+
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          if (trimmedLine) {
+            try {
+              if (trimmedLine.includes('<-') && !trimmedLine.match(/^\w+$/)) {
+                await shelter.evalR(trimmedLine);
+                continue;
+              }
+
+              const result = await shelter.evalR(trimmedLine);
+              
+              if (result && result.payloadType === 'double') {
+                const values = await result.toTypedArray();
+                const formatted = Array.from(values).join(' ');
+                outputs.push(`[1] ${formatted}`);
+              } else if (result && result.payloadType === 'string') {
+                const values = await result.toArray();
+                const formatted = values.map(v => `"${v}"`).join(' ');
+                outputs.push(`[1] ${formatted}`);
+              } else if (result && result.payloadType === 'logical') {
+                const values = await result.toArray();
+                const formatted = values.map(v => v ? 'TRUE' : 'FALSE').join('  ');
+                outputs.push(`[1] ${formatted}`);
+              } else {
+                const captureResult = await shelter.evalR(`capture.output(${trimmedLine})`);
+                if (captureResult) {
+                  const capturedLines = await captureResult.toArray();
+                  if (capturedLines && capturedLines.length > 0) {
+                    outputs.push(capturedLines.join('\n'));
+                  }
+                }
+              }
+            } catch (lineError) {
+              console.log('Line execution error:', lineError.message);
+            }
+          }
+        }
+        
+        return outputs.join('\n') || 'Code executed successfully (no output to display)';
+        
+      } finally {
+        shelter.purge();
+      }
+      
+    } catch (error) {
+      throw new Error(`R Error: ${error.message}`);
+    }
   };
 
-  const getExerciseOutput = (lessonId, exampleIndex) => {
-    const exerciseOutputData = {
-      "0-0": `[1] 40`,
-      "0-1": `[1] 25`,
-      "1-0": `[1] "red"   "blue"  "green"`,
-      "1-1": `[1] 2 4 6\n[1]  6 12 18`,
-      "2-0": `  brand year\n1 Toyota 2020\n2  Honda 2019`,
-      "2-1": `[1] 20 22 21`,
-      "3-0": `[1] 67`,
-      "3-1": `[1] "LEARNING R"`,
-      "4-0": `[1] "x is greater than 10"`,
-      "4-1": `[1] 1\n[1] 2\n[1] 3`,
-      "5-0": `# A scatter plot showing points at (1,2), (2,4), (3,6), (4,8), (5,10)`,
-      "5-1": `# A histogram showing the frequency distribution of the values`
-    };
+  const runDemoCode = async (lessonId, exampleIndex) => {
+    if (!rReady) {
+      alert('R is still loading. Please wait a moment and try again.');
+      return;
+    }
+
+    const key = `${lessonId}-${exampleIndex}`;
+    setExecutingCode(prev => ({ ...prev, [key]: true }));
     
-    return exerciseOutputData[`${lessonId}-${exampleIndex}`] || "Output would be displayed here";
+    try {
+      const code = lessons[lessonId].examples[exampleIndex].code;
+      const output = await executeRCode(code);
+      
+      setDemoOutputs(prev => ({
+        ...prev,
+        [key]: output
+      }));
+      
+      setTimeout(() => {
+        setDemoOutputs(prev => {
+          const newOutputs = { ...prev };
+          delete newOutputs[key];
+          return newOutputs;
+        });
+      }, 12000);
+    } catch (error) {
+      setDemoOutputs(prev => ({
+        ...prev,
+        [key]: `Error: ${error.message}`
+      }));
+      
+      setTimeout(() => {
+        setDemoOutputs(prev => {
+          const newOutputs = { ...prev };
+          delete newOutputs[key];
+          return newOutputs;
+        });
+      }, 8000);
+    } finally {
+      setExecutingCode(prev => ({ ...prev, [key]: false }));
+    }
   };
 
   const normalizeCode = (code) => {
@@ -378,60 +468,81 @@ hist(data)`,
     return { correct: true, message: "🎉 Excellent! Your code is correct!" };
   };
 
-  const runDemoCode = (lessonId, exampleIndex) => {
-    const key = `${lessonId}-${exampleIndex}`;
-    const expectedOutput = getDemoOutput(lessonId, exampleIndex);
-    
-    setDemoOutputs(prev => ({
-      ...prev,
-      [key]: expectedOutput
-    }));
-    
-    setTimeout(() => {
-      setDemoOutputs(prev => {
-        const newOutputs = { ...prev };
-        delete newOutputs[key];
-        return newOutputs;
-      });
-    }, 8000);
-  };
+  const runUserCode = async (lessonId, exampleIndex) => {
+    if (!rReady) {
+      alert('R is still loading. Please wait a moment and try again.');
+      return;
+    }
 
-  const runUserCode = (lessonId, exampleIndex) => {
     const key = `${lessonId}-${exampleIndex}`;
     const userInput = userCode[key] || '';
     const expectedSolution = lessons[lessonId].examples[exampleIndex].exercise.solution;
     
-    const result = checkUserCode(userInput, expectedSolution);
-    
-    if (result.correct) {
-      const expectedOutput = getExerciseOutput(lessonId, exampleIndex);
+    if (!userInput.trim()) {
+      setFeedback(prev => ({
+        ...prev,
+        [key]: { type: 'error', message: '❌ Please enter some code first!' }
+      }));
+      setTimeout(() => {
+        setFeedback(prev => {
+          const newFeedback = { ...prev };
+          delete newFeedback[key];
+          return newFeedback;
+        });
+      }, 3000);
+      return;
+    }
+
+    setExecutingCode(prev => ({ ...prev, [key]: true }));
+
+    try {
+      // Execute the user's code
+      const output = await executeRCode(userInput);
+      
+      // Check if the code matches the expected solution
+      const result = checkUserCode(userInput, expectedSolution);
+      
       setUserOutputs(prev => ({
         ...prev,
-        [key]: expectedOutput
+        [key]: output
       }));
+      
       setFeedback(prev => ({
         ...prev,
-        [key]: { type: 'success', message: result.message }
+        [key]: { 
+          type: result.correct ? 'success' : 'partial', 
+          message: result.correct ? result.message : `✅ Code executed! ${result.message}` 
+        }
       }));
-    } else {
+      
+      setTimeout(() => {
+        setFeedback(prev => {
+          const newFeedback = { ...prev };
+          delete newFeedback[key];
+          return newFeedback;
+        });
+        setUserOutputs(prev => {
+          const newOutputs = { ...prev };
+          delete newOutputs[key];
+          return newOutputs;
+        });
+      }, 8000);
+    } catch (error) {
       setFeedback(prev => ({
         ...prev,
-        [key]: { type: 'error', message: result.message }
+        [key]: { type: 'error', message: `❌ ${error.message}` }
       }));
+      
+      setTimeout(() => {
+        setFeedback(prev => {
+          const newFeedback = { ...prev };
+          delete newFeedback[key];
+          return newFeedback;
+        });
+      }, 5000);
+    } finally {
+      setExecutingCode(prev => ({ ...prev, [key]: false }));
     }
-    
-    setTimeout(() => {
-      setFeedback(prev => {
-        const newFeedback = { ...prev };
-        delete newFeedback[key];
-        return newFeedback;
-      });
-      setUserOutputs(prev => {
-        const newOutputs = { ...prev };
-        delete newOutputs[key];
-        return newOutputs;
-      });
-    }, 5000);
   };
 
   const showHint = (lessonId, exampleIndex) => {
@@ -448,7 +559,7 @@ hist(data)`,
         delete newFeedback[key];
         return newFeedback;
       });
-    }, 5000);
+    }, 8000);
   };
 
   const toggleSolution = (lessonId, exampleIndex) => {
@@ -488,7 +599,25 @@ hist(data)`,
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">A Very Basic Introduction to R Programming</h1>
-                <p className="text-purple-100">Interactive lessons to learn the basics of R programming before getting started with data-related adventures!</p>
+                <p className="text-purple-100">Interactive lessons with REAL R code execution!</p>
+                <div className="flex items-center mt-2">
+                  {rLoading ? (
+                    <div className="flex items-center text-yellow-200">
+                      <Loader className="h-4 w-4 mr-2 animate-spin" />
+                      <span>Loading R engine...</span>
+                    </div>
+                  ) : rReady ? (
+                    <div className="flex items-center text-green-200">
+                      <div className="h-2 w-2 bg-green-400 rounded-full mr-2"></div>
+                      <span>R engine ready!</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center text-red-200">
+                      <div className="h-2 w-2 bg-red-400 rounded-full mr-2"></div>
+                      <span>R engine failed to load</span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -573,10 +702,20 @@ hist(data)`,
                       {/* Run Button */}
                       <button
                         onClick={() => runDemoCode(selectedLesson, index)}
-                        className="absolute top-4 right-4 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                        disabled={!rReady || executingCode[`${selectedLesson}-${index}`]}
+                        className="absolute top-4 right-4 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-300 transform hover:scale-105 disabled:transform-none shadow-lg"
                       >
-                        <Play className="h-4 w-4" />
-                        <span>Run Code</span>
+                        {executingCode[`${selectedLesson}-${index}`] ? (
+                          <>
+                            <Loader className="h-4 w-4 animate-spin" />
+                            <span>Running...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="h-4 w-4" />
+                            <span>Run Code</span>
+                          </>
+                        )}
                       </button>
                     </div>
 
@@ -584,7 +723,7 @@ hist(data)`,
                     {demoOutputs[`${selectedLesson}-${index}`] && (
                       <div className="bg-gradient-to-r from-green-50 to-blue-50 border-t-2 border-green-200 p-4">
                         <h4 className="font-semibold text-green-800 mb-2">Output:</h4>
-                        <pre className="text-sm text-green-700 bg-white p-3 rounded-lg border border-green-200 whitespace-pre-wrap shadow-inner">
+                        <pre className="text-sm text-green-700 bg-white p-3 rounded-lg border border-green-200 whitespace-pre-wrap shadow-inner font-mono">
                           {demoOutputs[`${selectedLesson}-${index}`]}
                         </pre>
                       </div>
@@ -613,10 +752,20 @@ hist(data)`,
                           <div className="flex space-x-2 flex-wrap">
                             <button
                               onClick={() => runUserCode(selectedLesson, index)}
-                              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                              disabled={!rReady || executingCode[`${selectedLesson}-${index}`]}
+                              className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-300 transform hover:scale-105 disabled:transform-none shadow-lg"
                             >
-                              <Play className="h-4 w-4" />
-                              <span>Run My Code</span>
+                              {executingCode[`${selectedLesson}-${index}`] ? (
+                                <>
+                                  <Loader className="h-4 w-4 animate-spin" />
+                                  <span>Running...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Play className="h-4 w-4" />
+                                  <span>Run My Code</span>
+                                </>
+                              )}
                             </button>
                             
                             <button
@@ -651,6 +800,8 @@ hist(data)`,
                                 ? 'bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-2 border-green-300' 
                                 : feedback[`${selectedLesson}-${index}`].type === 'error'
                                 ? 'bg-gradient-to-r from-red-100 to-pink-100 text-red-800 border-2 border-red-300'
+                                : feedback[`${selectedLesson}-${index}`].type === 'partial'
+                                ? 'bg-gradient-to-r from-blue-100 to-cyan-100 text-blue-800 border-2 border-blue-300'
                                 : 'bg-gradient-to-r from-yellow-100 to-orange-100 text-yellow-800 border-2 border-yellow-300'
                             }`}>
                               {feedback[`${selectedLesson}-${index}`].message}
@@ -661,7 +812,7 @@ hist(data)`,
                           {userOutputs[`${selectedLesson}-${index}`] && (
                             <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 p-4 rounded-xl shadow-lg">
                               <h5 className="font-semibold text-green-900 mb-2">Your Output:</h5>
-                              <pre className="text-sm text-green-700 bg-white p-3 rounded-lg border border-green-200 whitespace-pre-wrap shadow-inner">
+                              <pre className="text-sm text-green-700 bg-white p-3 rounded-lg border border-green-200 whitespace-pre-wrap shadow-inner font-mono">
                                 {userOutputs[`${selectedLesson}-${index}`]}
                               </pre>
                             </div>
@@ -678,7 +829,7 @@ hist(data)`,
                 <button
                   onClick={() => setSelectedLesson(Math.max(0, selectedLesson - 1))}
                   disabled={selectedLesson === 0}
-                  className="px-4 py-2 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-700 rounded-lg hover:from-gray-400 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  className="px-4 py-2 bg-gradient-to-r from-gray-300 to-gray-400 text-gray-700 rounded-lg hover:from-gray-400 hover:to-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105 disabled:transform-none shadow-lg"
                 >
                   Previous Lesson
                 </button>
@@ -720,7 +871,7 @@ hist(data)`,
             <div className="text-6xl mb-6 animate-pulse">🎉</div>
             <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">Congratulations!</h2>
             <p className="text-lg text-gray-700 mb-6">
-              You've completed all the lessons and mastered the basics of R programming!
+              You've completed all the lessons and mastered the basics of R programming with real code execution!
             </p>
             <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 animate-pulse">
               You R now ready! 🚀
@@ -731,6 +882,26 @@ hist(data)`,
             >
               Awesome! Close this message.
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* R Loading Overlay */}
+      {rLoading && (
+        <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-pink-900 to-indigo-900 bg-opacity-90 flex items-center justify-center z-40">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 text-center max-w-md mx-4">
+            <div className="mb-6">
+              <Loader className="h-16 w-16 mx-auto animate-spin text-purple-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-purple-900 mb-4">Loading R Engine</h3>
+            <p className="text-gray-700 mb-4">
+              We're setting up a full R environment in your browser using WebAssembly. This may take a moment...
+            </p>
+            <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg p-3">
+              <p className="text-sm text-purple-800">
+                🚀 Once loaded, you'll be able to run real R code directly in your browser!
+              </p>
+            </div>
           </div>
         </div>
       )}
